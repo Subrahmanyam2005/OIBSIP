@@ -1,0 +1,113 @@
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Book class representing a book object
+class Book {
+    String title;
+    String author;
+
+    // Constructor to initialize book object
+    public Book(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
+
+    @Override
+    public String toString() {
+        return "Title: " + title + ", Author: " + author;
+    }
+}
+
+// Admin class for administrator functionalities
+class Admin {
+    List<Book> books = new ArrayList<>();
+
+    // Method to add a book
+    public void addBook(String title, String author) {
+        books.add(new Book(title, author));
+        System.out.println("Book added: " + title);
+    }
+
+    // Method to view all books
+    public void viewBooks() {
+        if (books.isEmpty()) {
+            System.out.println("No books available.");
+        } else {
+            for (Book book : books) {
+                System.out.println(book);
+            }
+        }
+    }
+
+    // Method to delete a book
+    public void deleteBook(String title) {
+        books.removeIf(book -> book.title.equals(title));
+        System.out.println("Book removed: " + title);
+    }
+}
+
+// User class for user functionalities
+class User {
+    Admin admin;
+
+    public User(Admin admin) {
+        this.admin = admin;
+    }
+
+    // Method for users to view available books
+    public void browseBooks() {
+        System.out.println("Available books:");
+        admin.viewBooks();
+    }
+}
+
+// Main class to run the application
+public class LibraryManagementSystem {
+    public static void main(String[] args) {
+        Admin admin = new Admin();
+        User user = new User(admin);
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("\n1. Admin Add Book");
+            System.out.println("2. Admin View Books");
+            System.out.println("3. Admin Delete Book");
+            System.out.println("4. User Browse Books");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1: // Admin adds a book
+                    System.out.print("Enter book title: ");
+                    String title = scanner.nextLine();
+                    System.out.print("Enter book author: ");
+                    String author = scanner.nextLine();
+                    admin.addBook(title, author);
+                    break;
+                case 2: // Admin views books
+                    admin.viewBooks();
+                    break;
+                case 3: // Admin deletes a book
+                    System.out.print("Enter book title to delete: ");
+                    String titleToDelete = scanner.nextLine();
+                    admin.deleteBook(titleToDelete);
+                    break;
+                case 4: // User browses books
+                    user.browseBooks();
+                    break;
+                case 5: // Exit the program
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 5);
+        scanner.close();
+    }
+}
