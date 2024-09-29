@@ -1,0 +1,127 @@
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
+class User {
+    String username;
+    String password;
+    String profileInfo;
+
+    User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.profileInfo = "";
+    }
+
+    void updateProfile(String info) {
+        this.profileInfo = info;
+    }
+
+    void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+}
+
+public class QuizApp {
+    private static HashMap<String, User> users = new HashMap<>();
+    private static User loggedInUser = null;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Sample users
+        users.put("user1", new User("user1", "pass1"));
+        users.put("user2", new User("user2", "pass2"));
+
+        while (true) {
+            System.out.println("1. Login");
+            System.out.println("2. Exit");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            if (choice == 1) {
+                login(scanner);
+                if (loggedInUser != null) {
+                    userMenu(scanner);
+                }
+            } else if (choice == 2) {
+                break;
+            }
+        }
+
+        scanner.close();
+    }
+
+    private static void login(Scanner scanner) {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        User user = users.get(username);
+        if (user != null && user.password.equals(password)) {
+            loggedInUser = user;
+            System.out.println("Login successful!");
+        } else {
+            System.out.println("Invalid username or password.");
+        }
+    }
+
+    private static void userMenu(Scanner scanner) {
+        while (true) {
+            System.out.println("1. Update Profile");
+            System.out.println("2. Change Password");
+            System.out.println("3. Take Quiz");
+            System.out.println("4. Logout");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            if (choice == 1) {
+                System.out.print("Enter new profile info: ");
+                String info = scanner.nextLine();
+                loggedInUser.updateProfile(info);
+                System.out.println("Profile updated.");
+            } else if (choice == 2) {
+                System.out.print("Enter new password: ");
+                String newPassword = scanner.nextLine();
+                loggedInUser.updatePassword(newPassword);
+                System.out.println("Password changed.");
+            } else if (choice == 3) {
+                takeQuiz(scanner);
+            } else if (choice == 4) {
+                loggedInUser = null;
+                System.out.println("Logged out.");
+                break;
+            }
+        }
+    }
+
+    private static void takeQuiz(Scanner scanner) {
+        // Updated questions
+        String[] questions = {
+            "1. Who is the CM of Andhra Pradesh?\n(1. N. Chandrababu Naidu  2. Y. S. Jagan Mohan Reddy  3. Kiran Kumar Reddy)",
+            "2. What is the capital of Andhra Pradesh?\n(1. Visakhapatnam  2. Amaravati  3. Vijayawada)",
+            "3. What is the capital of England?\n(1. London  2. Manchester  3. Birmingham)"
+        };
+        int timeLimit = 20; // seconds
+
+        for (String question : questions) {
+            System.out.println(question);
+        }
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Time's up! Automatically submitting your answers.");
+                System.exit(0);
+            }
+        }, timeLimit * 1000);
+
+        System.out.print("Enter your answers (comma-separated, e.g., 2,1,1): ");
+        String answers = scanner.nextLine();
+        timer.cancel();
+        System.out.println("Your answers: " + answers);
+    }
+}
